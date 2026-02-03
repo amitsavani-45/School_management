@@ -15,8 +15,6 @@ class StudentAdmin(admin.ModelAdmin):
         }),
         ('Academic Information', {
             'fields': ('subject', 'score', 'result')
-        }),
-        ('Timestamp', {
-            'fields': ('created_at',)
-        }),
+        })
+        
     )
