@@ -5,13 +5,14 @@ function App() {
   const [formData, setFormData] = useState({
     name: '',
     age: '',
-    class: '',
+    student_class: '',
     school: '',
     subject: '',
     score: ''
   });
 
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,11 +31,11 @@ function App() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validation
-    if (!formData.name || !formData.age || !formData.class || !formData.school || !formData.subject || !formData.score) {
+    if (!formData.name || !formData.age || !formData.student_class || !formData.school || !formData.subject || !formData.score) {
       alert('Please fill in all fields');
       return;
     }
@@ -46,19 +47,45 @@ function App() {
 
     const passResult = calculateResult(formData.score);
     setResult(passResult);
+    setLoading(true);
 
-    // Reset form after 2 seconds
-    setTimeout(() => {
-      setFormData({
-        name: '',
-        age: '',
-        class: '',
-        school: '',
-        subject: '',
-        score: ''
+    try {
+      // Send data to Django backend
+      const response = await fetch('http://127.0.0.1:8000/api/student/create/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Success - show result for 2 seconds then reset
+        setTimeout(() => {
+          setFormData({
+            name: '',
+            age: '',
+            student_class: '',
+            school: '',
+            subject: '',
+            score: ''
+          });
+          setResult(null);
+          alert('Data saved successfully to database!');
+        }, 2000);
+      } else {
+        alert('Error saving data: ' + (data.message || 'Please check your input'));
+        setResult(null);
+      }
+    } catch (error) {
+      alert('Error connecting to server. Please make sure Django backend is running on http://127.0.0.1:8000/');
+      console.error('Error:', error);
       setResult(null);
-    }, 2000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -75,8 +102,8 @@ function App() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-             
               required
+              disabled={loading}
             />
           </div>
 
@@ -88,23 +115,23 @@ function App() {
               name="age"
               value={formData.age}
               onChange={handleChange}
-             
               min="5"
               max="100"
               required
+              disabled={loading}
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="class">Class</label>
+            <label htmlFor="student_class">Class</label>
             <input
               type="text"
-              id="class"
-              name="class"
-              value={formData.class}
+              id="student_class"
+              name="student_class"
+              value={formData.student_class}
               onChange={handleChange}
-         
               required
+              disabled={loading}
             />
           </div>
 
@@ -116,8 +143,8 @@ function App() {
               name="school"
               value={formData.school}
               onChange={handleChange}
-              
               required
+              disabled={loading}
             />
           </div>
 
@@ -129,8 +156,8 @@ function App() {
               name="subject"
               value={formData.subject}
               onChange={handleChange}
-             
               required
+              disabled={loading}
             />
           </div>
 
@@ -142,20 +169,24 @@ function App() {
               name="score"
               value={formData.score}
               onChange={handleChange}
-
               min="0"
               max="100"
               step="0.01"
               required
+              disabled={loading}
             />
           </div>
 
-          <button type="submit" className="submit-btn">
-            Submit
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? 'Submitting...' : 'Submit'}
           </button>
         </form>
 
-        
+        {result && (
+          <div className={`result-message ${result === 'Pass' ? 'pass' : 'fail'}`}>
+            Result: {result}
+          </div>
+        )}
       </div>
     </div>
   );
