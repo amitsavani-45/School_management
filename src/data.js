@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './ViewRecords.css';
+import './Data.css';
 
-function ViewRecords() {
+function Data() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -148,4 +148,4 @@ function ViewRecords() {
   );
 }
 
-export default ViewRecords;
+export default Data;
