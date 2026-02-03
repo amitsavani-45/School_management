@@ -12,7 +12,7 @@ class Student(models.Model):
     
     class Meta:
         db_table = 'students'
-        ordering = ['-created_at']
+       
     
     def __str__(self):
         return f"{self.name} - {self.subject}"
