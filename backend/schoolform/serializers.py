@@ -27,3 +27,4 @@ def validate_student_class(self, value):
     if class_value < 1 or class_value > 12:
         raise serializers.ValidationError("Class must be between 1 and 12")
     return class_value
+    

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Data from './Data';
+
+
 function App() {
   const [formData, setFormData] = useState({
     name: '',
@@ -90,6 +92,9 @@ function App() {
   };
 
   return (
+
+
+ 
     <div className="container">
       <div className="form-wrapper">
         <h1 className="form-title">School Management System</h1>
@@ -193,46 +198,6 @@ function App() {
   );
 }
 
-function Navigation() {
-  const location = useLocation();
-  
-  return (
-    <nav className="navigation">
-      <div className="nav-container">
-        <div className="nav-brand">📚 School Management</div>
-        <div className="nav-links">
-          <Link 
-            to="/" 
-            className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
-          >
-            Add Student
-          </Link>
-          <Link 
-            to="/records" 
-            className={`nav-link ${location.pathname === '/records' ? 'active' : ''}`}
-          >
-            Data
-          </Link>
-        </div>
-      </div>
-    </nav>
-  );
-}
-
-function StudentForm() {
-  return (
-    <Router>
-      <div className="app">
-        <Navigation />
-        <div className="container">
-          <Routes>
-            <Route path="/" element={<StudentForm />} />
-            <Route path="/records" element={<Data />} />
-          </Routes>
-        </div>
-      </div>
-    </Router>
-  );
-}
-
 export default App;
+
+  
