@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import './Data.css';
-
+import 'bootstrap-icons/font/bootstrap-icons.css';
 function Data() {
   const [students, setStudents] = useState([]);
+  const [filteredStudents, setFilteredStudents] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch student data when component loads
   useEffect(() => {
     fetchStudents();
   }, []);
+
+  // Filter students whenever searchTerm changes
+  useEffect(() => {
+    if (searchTerm === '') {
+      setFilteredStudents(students);
+    } else {
+      const filtered = students.filter(student =>
+        student.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredStudents(filtered);
+    }
+  }, [searchTerm, students]);
 
   const fetchStudents = async () => {
     try {
@@ -21,11 +34,30 @@ function Data() {
       }
 
       const data = await response.json();
-      setStudents(data);
+      
+      console.log('API Response:', data);
+      
+      if (Array.isArray(data)) {
+        setStudents(data);
+        setFilteredStudents(data);
+      } else if (data.students && Array.isArray(data.students)) {
+        setStudents(data.students);
+        setFilteredStudents(data.students);
+      } else if (data.results && Array.isArray(data.results)) {
+        setStudents(data.results);
+        setFilteredStudents(data.results);
+      } else {
+        setStudents([]);
+        setFilteredStudents([]);
+        console.warn('Unexpected data format:', data);
+      }
+      
       setError(null);
     } catch (error) {
       console.error('Error fetching students:', error);
       setError('Error connecting to server. Please make sure Django backend is running.');
+      setStudents([]);
+      setFilteredStudents([]);
     } finally {
       setLoading(false);
     }
@@ -42,7 +74,6 @@ function Data() {
       });
 
       if (response.ok) {
-        // Remove the deleted student from the list
         setStudents(students.filter(student => student.id !== id));
         alert('Record deleted successfully!');
       } else {
@@ -55,7 +86,16 @@ function Data() {
   };
 
   const handleRefresh = () => {
+    setSearchTerm('');
     fetchStudents();
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
   };
 
   if (loading) {
@@ -80,17 +120,47 @@ function Data() {
   return (
     <div className="container">
       <div className="records-section">
-        <div className="records-header">
-          <h1 className="records-title">Student Records</h1>
-          <button onClick={handleRefresh} className="refresh-btn">
-            🔄 Refresh
-          </button>
-        </div>
+        <button onClick={handleRefresh} className="refresh-btn">
+        <i className="bi bi-arrow-clockwise"></i> Refresh
+        </button>
 
-        {students.length === 0 ? (
+      {/* Search Bar */}
+<div className="search-container">
+  <div className="search-wrapper">
+    <i className="bi bi-search search-icon"></i>
+    <input
+      type="text"
+      className="search-input"
+      placeholder="Search by student name..."
+      value={searchTerm}
+      onChange={handleSearchChange}
+    />
+    {searchTerm && (
+      <button className="clear-search-btn" onClick={clearSearch}>
+        <i className="bi bi-x"></i>
+      </button>
+    )}
+  </div>
+  {searchTerm && (
+    <p className="search-results-text">
+      Found {filteredStudents.length} student(s) matching "{searchTerm}"
+    </p>
+  )}
+</div>
+
+        {filteredStudents.length === 0 ? (
           <div className="no-records">
-            <p>No student records found.</p>
-            <p>Add some students using the form page.</p>
+            {searchTerm ? (
+              <>
+                <p>No students found matching "{searchTerm}"</p>
+                <p>Try a different search term or clear the search.</p>
+              </>
+            ) : (
+              <>
+                <p>No student records found.</p>
+                <p>Add some students using the form page.</p>
+              </>
+            )}
           </div>
         ) : (
           <div className="table-wrapper">
@@ -98,18 +168,18 @@ function Data() {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Name</th>
-                  <th>Age</th>
-                  <th>Class</th>
-                  <th>School</th>
-                  <th>Subject</th>
-                  <th>Score</th>
-                  <th>Result</th>
-                  <th>Action</th>
+                  <th>NAME</th>
+                  <th>AGE</th>
+                  <th>CLASS</th>
+                  <th>SCHOOL</th>
+                  <th>SUBJECT</th>
+                  <th>SCORE</th>
+                  <th>RESULT</th>
+                  <th>ACTION</th>
                 </tr>
               </thead>
               <tbody>
-                {students.map((student) => (
+                {filteredStudents.map((student) => (
                   <tr key={student.id}>
                     <td>{student.id}</td>
                     <td>{student.name}</td>
@@ -124,12 +194,12 @@ function Data() {
                       </span>
                     </td>
                     <td>
-                      <button 
-                        onClick={() => handleDelete(student.id)} 
-                        className="delete-btn"
-                      >
-                        Delete
-                      </button>
+                  <button 
+                   onClick={() => handleDelete(student.id)} 
+                   className="delete-btn"
+                   >
+                   <i className="bi bi-trash"></i> Delete
+                   </button>
                     </td>
                   </tr>
                 ))}
@@ -142,6 +212,9 @@ function Data() {
           <p>Total Records: <strong>{students.length}</strong></p>
           <p>Pass: <strong>{students.filter(s => s.result === 'Pass').length}</strong></p>
           <p>Fail: <strong>{students.filter(s => s.result === 'Fail').length}</strong></p>
+          {searchTerm && (
+            <p>Showing: <strong>{filteredStudents.length}</strong></p>
+          )}
         </div>
       </div>
     </div>

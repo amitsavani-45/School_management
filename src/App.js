@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Data from './Data';
 
-
-function App() {
+// Create a separate component for the form
+function StudentForm() {
   const [formData, setFormData] = useState({
     name: '',
     age: '',
@@ -37,7 +37,6 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validation
     if (!formData.name || !formData.age || !formData.student_class || !formData.school || !formData.subject || !formData.score) {
       alert('Please fill in all fields');
       return;
@@ -53,7 +52,6 @@ function App() {
     setLoading(true);
 
     try {
-      // Send data to Django backend
       const response = await fetch('http://127.0.0.1:8000/api/student/create/', {
         method: 'POST',
         headers: {
@@ -65,7 +63,6 @@ function App() {
       const data = await response.json();
 
       if (response.ok) {
-        // Success - show result for 2 seconds then reset
         setTimeout(() => {
           setFormData({
             name: '',
@@ -92,9 +89,6 @@ function App() {
   };
 
   return (
-
-
- 
     <div className="container">
       <div className="form-wrapper">
         <h1 className="form-title">School Management System</h1>
@@ -198,6 +192,27 @@ function App() {
   );
 }
 
-export default App;
+// Main App component with Router
+function App() {
+  return (
+    <Router>
+      <div>
+        {/* Navigation */}
+        <nav style={{ padding: '20px', background: '#f0f0f0', marginBottom: '20px' }}>
+          
+          <Link to="/data" style={{ textDecoration: 'none', color: '#333', fontWeight: 'bold' }}>
+            View Records
+          </Link>
+        </nav>
 
-  
+        {/* Routes */}
+        <Routes>
+          <Route path="/" element={<StudentForm />} />
+          <Route path="/data" element={<Data />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
