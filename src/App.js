@@ -198,11 +198,15 @@ function App() {
     <Router>
       <div>
         {/* Navigation */}
-        <nav style={{ padding: '20px', background: '#f0f0f0', marginBottom: '20px' }}>
+        <nav style={{ display: 'flex', gap: '2320px', padding: '20px', background: '#f0f0f0', marginBottom: '20px' }}>
           
+           <Link to="/" style={{  textDecoration: 'none', color: '#333', fontWeight: 'bold' }}>
+            Home
+          </Link>
           <Link to="/data" style={{ textDecoration: 'none', color: '#333', fontWeight: 'bold' }}>
             View Records
           </Link>
+         
         </nav>
 
         {/* Routes */}

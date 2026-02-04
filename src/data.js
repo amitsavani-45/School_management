@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Data.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+
 function Data() {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
@@ -120,33 +121,38 @@ function Data() {
   return (
     <div className="container">
       <div className="records-section">
-        <button onClick={handleRefresh} className="refresh-btn">
-        <i className="bi bi-arrow-clockwise"></i> Refresh
-        </button>
+        {/* Header with Title, Search, and Refresh Button */}
+        <div className="records-header">
+          <h1 className="records-title">Student Records</h1>
+          
+          <div className="header-right">
+            {/* Search Bar */}
+            <div className="search-wrapper">
+              <i className="bi bi-search search-icon"></i>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search by student name..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+              {searchTerm && (
+                <button className="clear-search-btn" onClick={clearSearch}>
+                  <i className="bi bi-x"></i>
+                </button>
+              )}
+            </div>
+            
+          
+          </div>
+        </div>
 
-      {/* Search Bar */}
-<div className="search-container">
-  <div className="search-wrapper">
-    <i className="bi bi-search search-icon"></i>
-    <input
-      type="text"
-      className="search-input"
-      placeholder="Search by student name..."
-      value={searchTerm}
-      onChange={handleSearchChange}
-    />
-    {searchTerm && (
-      <button className="clear-search-btn" onClick={clearSearch}>
-        <i className="bi bi-x"></i>
-      </button>
-    )}
-  </div>
-  {searchTerm && (
-    <p className="search-results-text">
-      Found {filteredStudents.length} student(s) matching "{searchTerm}"
-    </p>
-  )}
-</div>
+        {/* Search Results Text */}
+        {searchTerm && (
+          <p className="search-results-text">
+            Found {filteredStudents.length} student(s) matching "{searchTerm}"
+          </p>
+        )}
 
         {filteredStudents.length === 0 ? (
           <div className="no-records">
@@ -175,7 +181,7 @@ function Data() {
                   <th>SUBJECT</th>
                   <th>SCORE</th>
                   <th>RESULT</th>
-                  <th>ACTION</th>
+               
                 </tr>
               </thead>
               <tbody>
@@ -193,14 +199,7 @@ function Data() {
                         {student.result}
                       </span>
                     </td>
-                    <td>
-                  <button 
-                   onClick={() => handleDelete(student.id)} 
-                   className="delete-btn"
-                   >
-                   <i className="bi bi-trash"></i> Delete
-                   </button>
-                    </td>
+                   
                   </tr>
                 ))}
               </tbody>
@@ -208,14 +207,6 @@ function Data() {
           </div>
         )}
 
-        <div className="records-footer">
-          <p>Total Records: <strong>{students.length}</strong></p>
-          <p>Pass: <strong>{students.filter(s => s.result === 'Pass').length}</strong></p>
-          <p>Fail: <strong>{students.filter(s => s.result === 'Fail').length}</strong></p>
-          {searchTerm && (
-            <p>Showing: <strong>{filteredStudents.length}</strong></p>
-          )}
-        </div>
       </div>
     </div>
   );
