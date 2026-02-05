@@ -46,7 +46,7 @@ MIDDLEWARE = [
 ]
 
 
-# ✅ FIXED (MOST IMPORTANT)
+#  FIXED (MOST IMPORTANT)
 ROOT_URLCONF = 'backend.urls'
 
 
@@ -67,7 +67,7 @@ TEMPLATES = [
 ]
 
 
-# ✅ FIXED
+#  FIXED
 WSGI_APPLICATION = 'backend.wsgi.application'
 ASGI_APPLICATION = 'backend.asgi.application'
 
